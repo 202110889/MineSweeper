@@ -16,7 +16,7 @@
   color: black;
 }
 .buttons{
-  margin-top: 360px;
+  margin-top: -360px;
   width: 360px;
   height: 360px;
   display: flex;
@@ -43,4 +43,9 @@
   color: red;
   background-color: cyan;
   font-size: 30px;
+}
+.flagged-button{
+  background-image: url(field-button-flagged.png);
+  width: 40px;
+  height: 40px;
 }
