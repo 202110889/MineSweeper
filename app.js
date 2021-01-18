@@ -7,6 +7,7 @@ const mines = []
 const width = 9
 const height = 9
 const inputList = Array.from(buttonGrid.getElementsByTagName('input'))
+let minecount = Number(document.getElementById('minecount').innerHTML)
 function generateField () {
   // choose the location of mines
   while (mineNumber < 10) {
@@ -221,8 +222,12 @@ function flag (i) {
   const flagged = inputList[i].classList.contains('field-button-flagged')
   if (flagged) {
     inputList[i].setAttribute('class', 'field-button')
+    minecount++
+    document.getElementById('minecount').innerHTML = minecount
   } else {
     inputList[i].setAttribute('class', 'field-button-flagged')
+    minecount--
+    document.getElementById('minecount').innerHTML = minecount
   }
 }
 // Add functions on buttons
@@ -243,6 +248,3 @@ function assignFunction () {
 generateField()
 insertNumbers()
 assignFunction()
-console.log(grid)
-console.log(mines)
-console.log(squares)
