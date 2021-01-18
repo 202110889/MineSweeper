@@ -1,22 +1,12 @@
-var grid = document.getElementById('field')
-var squares = Array.from(grid.getElementsByTagName('div'))
-var buttonGrid = document.getElementsByClassName('buttons')[0]
+const grid = document.getElementById('field')
+const squares = Array.from(grid.getElementsByTagName('div'))
+const buttonGrid = document.getElementsByClassName('buttons')[0]
 let buttons = Array.from(buttonGrid.getElementsByTagName('div'))
 let mineNumber = 0
 const mines = []
 const width = 9
 const height = 9
-// create base field
-/*  function generateBaseField () {
-    while (fieldId < squares.length) {
-      var field = document.createElement('div')
-      var id = document.createAttribute('id')
-      id.value = fieldId
-      field.appendChild(id)
-      grid.appendChild(field)
-      fieldId++
-    }
-  } */
+const inputList = Array.from(buttonGrid.getElementsByTagName('input'))
 function generateField () {
   // choose the location of mines
   while (mineNumber < 10) {
@@ -109,6 +99,7 @@ function insertNumbers () {
       // insert number
       if (quantity !== 0) {
         squares[i].innerHTML = quantity
+        squares[i].setAttribute('id', 'filled')
       } else {
         squares[i].setAttribute('id', 'blank')
       }
@@ -120,71 +111,118 @@ function insertNumbers () {
 // prevent context menu to pop up
 [buttonGrid].forEach(el => el.addEventListener('contextmenu', e => e.preventDefault()))
 // functions of buttons
+// remove buttons
 function removeButtons (i) {
-  buttons[i].style.visibility = 'hidden'
-  if (squares[i].getAttribute('id') !== 'blank') {
-    if (squares[i].getAttribute('id') === 'mine') {
+  const flagged = inputList[i].classList.contains('field-button-flagged')
+  if (!(flagged)) {
+    buttons[i].style.visibility = 'hidden'
+    squares[i].setAttribute('class', 'opened')
+    if ((squares[i].getAttribute('id') !== 'blank') && (squares[i].getAttribute('id') === 'mine')) {
       mines.forEach(index => {
+        squares[i].setAttribute('class', 'mine')
         buttons[index].style.visibility = 'hidden'
-      })
-      mines.forEach(index => {
         squares[index].style.backgroundColor = 'red'
       })
-      alert('Game over')
+    } else if (squares[i].getAttribute('id') === 'blank') {
+      // boolean for a location of the index
+      const isAtLeft = i % width === 0
+      const isAtRight = i % width === 8
+      const isAtTop = Math.floor(i / height) === 0
+      const isAtBottom = Math.floor(i / height) === 8
+      // checklists for each type of indexes
+      const ulCheck = [i + 1, i + width, i + width + 1] // UL Corner
+      const uCheck = [i - 1, i + 1, i + width - 1, i + width, i + width + 1] // U Edge
+      const urCheck = [i - 1, i + width - 1, i + width] // UR Corner
+      const lCheck = [i - width, i - width + 1, i + 1, i + width, i + width + 1] // L Edge
+      const mCheck = [i - width - 1, i - width, i - width + 1, i - 1, i + 1, i + width - 1, i + width, i + width + 1] // Middle
+      const rCheck = [i - width - 1, i - width, i - 1, i + width - 1, i + width] // Right Edge
+      const dlCheck = [i - width, i - width + 1, i + 1] // DL Corner
+      const dCheck = [i - 1, i + 1, i - width - 1, i - width, i - width + 1] // D Edge
+      const drCheck = [i - width - 1, i - width, i - 1] // DR Corner
+      // delete buttons in each type of indexes
+      if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
+        for (let a = 0; a < ulCheck.length; a++) {
+          if (squares[ulCheck[a]].getAttribute('class', 'opened')) {
+            continue
+          } else {
+            removeButtons(ulCheck[a])
+          }
+        }
+      } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
+        for (let a = 0; a < uCheck.length; a++) {
+          if (squares[uCheck[a]].getAttribute('class', 'opened')) {
+            continue
+          } else {
+            removeButtons(uCheck[a])
+          }
+        }
+      } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
+        for (let a = 0; a < urCheck.length; a++) {
+          if (squares[urCheck[a]].getAttribute('class', 'opened')) {
+            continue
+          } else {
+            removeButtons(urCheck[a])
+          }
+        }
+      } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
+        for (let a = 0; a < lCheck.length; a++) {
+          if (squares[lCheck[a]].getAttribute('class', 'opened')) {
+            continue
+          } else {
+            removeButtons(lCheck[a])
+          }
+        }
+      } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // MIddle
+        for (let a = 0; a < mCheck.length; a++) {
+          if (squares[mCheck[a]].getAttribute('class', 'opened')) {
+            continue
+          } else {
+            removeButtons(mCheck[a])
+          }
+        }
+      } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
+        for (let a = 0; a < rCheck.length; a++) {
+          if (squares[rCheck[a]].getAttribute('class', 'opened')) {
+            continue
+          } else {
+            removeButtons(rCheck[a])
+          }
+        }
+      } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
+        for (let a = 0; a < dlCheck.length; a++) {
+          if (squares[dlCheck[a]].getAttribute('class', 'opened')) {
+            continue
+          } else {
+            removeButtons(dlCheck[a])
+          }
+        }
+      } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
+        for (let a = 0; a < dCheck.length; a++) {
+          if (squares[dCheck[a]].getAttribute('class', 'opened')) {
+            continue
+          } else {
+            removeButtons(dCheck[a])
+          }
+        }
+      } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
+        for (let a = 0; a < drCheck.length; a++) {
+          if (squares[drCheck[a]].getAttribute('class', 'opened')) {
+            continue
+          } else {
+            removeButtons(drCheck[a])
+          }
+        }
+      }
     }
-  } else if (squares[i].getAttribute('id') === 'blank') {
-    const isAtLeft = (i % width === 0) || !(squares[i - 1].classList.contains('blank'))
-    const isAtRight = (i % width === 8) || !(squares[i + 1].classList.contains('blank'))
-    const isAtTop = (Math.floor(i / height) === 0) || !(squares[i - width].classList.contains('blank'))
-    const isAtBottom = (Math.floor(i / height) === 8) || !(squares[i + width].classList.contains('blank'))
-    // checklists for each type of indexes
-    const ulCheck = [i + 1, i + width, i + width + 1] // UL Corner
-    const uCheck = [i - 1, i + 1, i + width - 1, i + width, i + width + 1] // U Edge
-    const urCheck = [i - 1, i + width - 1, i + width] // UR Corner
-    const lCheck = [i - width, i - width + 1, i + 1, i + width, i + width + 1] // L Edge
-    const mCheck = [i - width - 1, i - width, i - width + 1, i - 1, i + 1, i + width - 1, i + width, i + width + 1] // Middle
-    const rCheck = [i - width - 1, i - width, i - 1, i + width - 1, i + width] // Right Edge
-    const dlCheck = [i - width, i - width + 1, i + 1] // DL Corner
-    const dCheck = [i - 1, i + 1, i - width - 1, i - width, i - width + 1] // D Edge
-    const drCheck = [i - width - 1, i - width, i - 1] // DR Corner
-    // check mines in these lists of indexes
-    if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
-      for (let a = 0; a < ulCheck.length; a++) {
-        removeButtons(ulCheck[a])
-      }
-    } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
-      for (let a = 0; a < uCheck.length; a++) {
-        removeButtons(uCheck[a])
-      }
-    } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
-      for (let a = 0; a < urCheck.length; a++) {
-        removeButtons(urCheck[a])
-      }
-    } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
-      for (let a = 0; a < lCheck.length; a++) {
-        removeButtons(lCheck[a])
-      }
-    } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // Middle
-      for (let a = 0; a < mCheck.length; a++) {
-        removeButtons(mCheck[a])
-      }
-    } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
-      for (let a = 0; a < rCheck.length; a++) {
-        removeButtons(rCheck[a])
-      }
-    } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
-      for (let a = 0; a < dlCheck.length; a++) {
-        removeButtons(dlCheck[a])
-      }
-    } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
-      for (let a = 0; a < dCheck.length; a++) {
-        removeButtons(dCheck[a])
-      }
-    } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
-      for (let a = 0; a < drCheck.length; a++) {
-        removeButtons(drCheck[a])
-      }
-    }
+  }
+}
+// put/remove a flag on a button
+function flag (i) {
+  const flagged = inputList[i].classList.contains('field-button-flagged')
+  if (flagged) {
+    inputList[i].setAttribute('class', 'field-button')
+  } else {
+    inputList[i].setAttribute('class', 'field-button-flagged')
   }
 }
 // Add functions on buttons
@@ -197,7 +235,7 @@ function assignFunction () {
       } else if (event.button === 1) {
         alert(event.button + ' has no function yet')
       } else if (event.button === 2) {
-        alert(event.button + ' has no function yet')
+        flag(index)
       }
     })
   }
