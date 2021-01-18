@@ -1,6 +1,6 @@
 .field{
-  width: 360px;
-  height: 360px;
+  width: 1200px;
+  height: 640px;
   display: flex;
   flex-wrap: wrap;
   flex=direction: row;
@@ -16,9 +16,9 @@
   color: black;
 }
 .buttons{
-  margin-top: -360px;
-  width: 360px;
-  height: 360px;
+  margin-top: -640px;
+  width: 1200px;
+  height: 640px;
   display: flex;
   flex-wrap: wrap;
   flex=direction: row;
