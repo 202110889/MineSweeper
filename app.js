@@ -4,15 +4,14 @@ const buttonGrid = document.getElementsByClassName('buttons')[0]
 let buttons = Array.from(buttonGrid.getElementsByTagName('div'))
 let mineNumber = 0
 const mines = []
-const width = 9
-const height = 9
+const width = 30
 const inputList = Array.from(buttonGrid.getElementsByTagName('input'))
 let minecount = Number(document.getElementById('minecount').innerHTML)
 function generateField () {
   // choose the location of mines
-  while (mineNumber < 10) {
+  while (mineNumber < 99) {
     mineNumber++
-    const random = Math.floor(Math.random() * 81)
+    const random = Math.floor(Math.random() * 480)
     if (mines.includes(random)) {
       mineNumber--
     } else {
@@ -28,9 +27,9 @@ function insertNumbers () {
     if (!(squares[i].classList.contains('mine'))) {
       // boolean for a location of the index
       const isAtLeft = i % width === 0
-      const isAtRight = i % width === 8
-      const isAtTop = Math.floor(i / height) === 0
-      const isAtBottom = Math.floor(i / height) === 8
+      const isAtRight = i % width === 29
+      const isAtTop = Math.floor(i / width) === 0
+      const isAtBottom = Math.floor(i / width) === 15
       // checklists for each type of indexes
       const ulCheck = [i + 1, i + width, i + width + 1] // UL Corner
       const uCheck = [i - 1, i + 1, i + width - 1, i + width, i + width + 1] // U Edge
@@ -127,9 +126,9 @@ function removeButtons (i) {
     } else if (squares[i].getAttribute('id') === 'blank') {
       // boolean for a location of the index
       const isAtLeft = i % width === 0
-      const isAtRight = i % width === 8
-      const isAtTop = Math.floor(i / height) === 0
-      const isAtBottom = Math.floor(i / height) === 8
+      const isAtRight = i % width === 29
+      const isAtTop = Math.floor(i / width) === 0
+      const isAtBottom = Math.floor(i / width) === 15
       // checklists for each type of indexes
       const ulCheck = [i + 1, i + width, i + width + 1] // UL Corner
       const uCheck = [i - 1, i + 1, i + width - 1, i + width, i + width + 1] // U Edge
