@@ -139,6 +139,10 @@ function removeButtons (i) {
           squares[index].style.backgroundColor = 'red'
         }
       })
+      alert('운빨망겜')
+      let gridClone = grid.cloneNode(true), buttonGridClone = buttonGrid.cloneNode(true)
+      grid.parentNode.replaceChild(gridClone, grid)
+      buttonGrid.parentNode.replaceChild(buttonGridClone, buttonGrid)
     } else if (squares[i].getAttribute('id') === 'blank') {
       // boolean for a location of the index
       const isAtLeft = i % width === 0
