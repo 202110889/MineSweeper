@@ -130,7 +130,6 @@ function removeButtons (i) {
     buttons[i].style.visibility = 'hidden'
     squares[i].setAttribute('class', 'opened')
     normalIndexCount--
-    console.log(normalIndexCount)
     if ((squares[i].getAttribute('id') !== 'blank') && (squares[i].getAttribute('id') === 'mine')) {
       mines.forEach(index => {
         if (!(flagged)) {
