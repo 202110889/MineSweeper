@@ -136,6 +136,10 @@ function removeButtons (i) {
           squares[i].setAttribute('class', 'mine')
           inputList[index].style.visibility = 'hidden'
           squares[index].style.backgroundColor = 'red'
+          alert('운빨망겜')
+          let gridClone = grid.cloneNode(true), buttonGridClone = buttonGrid.cloneNode(true)
+          grid.parentNode.replaceChild(gridClone, grid)
+          buttonGrid.parentNode.replaceChild(buttonGridClone, buttonGrid)
         }
       })
     } else if (squares[i].getAttribute('id') === 'blank') {
