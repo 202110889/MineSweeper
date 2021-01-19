@@ -1,5 +1,5 @@
 .field{
-  width: 1200px;
+  width: 640px;
   height: 640px;
   display: flex;
   flex-wrap: wrap;
@@ -17,7 +17,7 @@
 }
 .buttons{
   margin-top: -640px;
-  width: 1200px;
+  width: 640px;
   height: 640px;
   display: flex;
   flex-wrap: wrap;
