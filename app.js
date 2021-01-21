@@ -44,76 +44,76 @@ function generateField () {
   }
 }
 function insertNumbers () {
-  for (let i = 0; i < squares.length; i++) {
-    let quantity = 0
-    if (!(squares[i].classList.contains('mine'))) {
+  for (let index = 0; index < squares.length; index++) {
+    let mineQuantity = 0
+    if (!(squares[index].classList.contains('mine'))) {
       // boolean for a location of the index
-      const isAtLeft = i % width === 0
-      const isAtRight = i % width === width - 1
-      const isAtTop = Math.floor(i / width) === 0
-      const isAtBottom = Math.floor(i / width) === height - 1
+      const isAtLeft = index % width === 0
+      const isAtRight = index % width === width - 1
+      const isAtTop = Math.floor(index / width) === 0
+      const isAtBottom = Math.floor(index / width) === height - 1
       // choose a number for each type of indexes
       if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
         for (let a = 0; a < ulCheck.length; a++) {
-          if (squares[ulCheck[a] + i].classList.contains('mine')) {
-            quantity++
+          if (squares[ulCheck[a] + index].classList.contains('mine')) {
+            mineQuantity++
           }
         }
       } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
         for (let a = 0; a < uCheck.length; a++) {
-          if (squares[uCheck[a] + i].classList.contains('mine')) {
-            quantity++
+          if (squares[uCheck[a] + index].classList.contains('mine')) {
+            mineQuantity++
           }
         }
       } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
         for (let a = 0; a < urCheck.length; a++) {
-          if (squares[urCheck[a] + i].classList.contains('mine')) {
-            quantity++
+          if (squares[urCheck[a] + index].classList.contains('mine')) {
+            mineQuantity++
           }
         }
       } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
         for (let a = 0; a < lCheck.length; a++) {
-          if (squares[lCheck[a] + i].classList.contains('mine')) {
-            quantity++
+          if (squares[lCheck[a] + index].classList.contains('mine')) {
+            mineQuantity++
           }
         }
       } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // MIddle
         for (let a = 0; a < mCheck.length; a++) {
-          if (squares[mCheck[a] + i].classList.contains('mine')) {
-            quantity++
+          if (squares[mCheck[a] + index].classList.contains('mine')) {
+            mineQuantity++
           }
         }
       } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
         for (let a = 0; a < rCheck.length; a++) {
-          if (squares[rCheck[a] + i].classList.contains('mine')) {
-            quantity++
+          if (squares[rCheck[a] + index].classList.contains('mine')) {
+            mineQuantity++
           }
         }
       } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
         for (let a = 0; a < drCheck.length; a++) {
-          if (squares[dlCheck[a] + i].classList.contains('mine')) {
-            quantity++
+          if (squares[dlCheck[a] + index].classList.contains('mine')) {
+            mineQuantity++
           }
         }
       } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
         for (let a = 0; a < dCheck.length; a++) {
-          if (squares[dCheck[a] + i].classList.contains('mine')) {
-            quantity++
+          if (squares[dCheck[a] + index].classList.contains('mine')) {
+            mineQuantity++
           }
         }
       } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
         for (let a = 0; a < drCheck.length; a++) {
-          if (squares[drCheck[a] + i].classList.contains('mine')) {
-            quantity++
+          if (squares[drCheck[a] + index].classList.contains('mine')) {
+            mineQuantity++
           }
         }
       }
       // insert number
-      if (quantity !== 0) {
-        squares[i].innerHTML = quantity
-        squares[i].setAttribute('id', 'filled')
+      if (mineQuantity !== 0) {
+        squares[index].innerHTML = mineQuantity
+        squares[index].setAttribute('id', 'filled')
       } else {
-        squares[i].setAttribute('id', 'blank')
+        squares[index].setAttribute('id', 'blank')
       }
     } else { // if mine is in this index, skip to next index
       continue
@@ -126,10 +126,11 @@ document.addEventListener('contextmenu', e => e.preventDefault())
 // remove buttons
 function removeButtons (i) {
   const flagged = inputList[i].classList.contains('field-button-flagged')
-  if (!(flagged)) {
+  if (!(flagged) && (buttons[i].style.visibility !== 'hidden')) {
     buttons[i].style.visibility = 'hidden'
     squares[i].setAttribute('class', 'opened')
     normalIndexCount--
+    gameClear(i)
     if ((squares[i].getAttribute('id') !== 'blank') && (squares[i].getAttribute('id') === 'mine')) {
       mines.forEach(index => {
         if (!(flagged)) {
@@ -139,9 +140,7 @@ function removeButtons (i) {
         }
       })
       alert('운빨망겜')
-      let gridClone = grid.cloneNode(true), buttonGridClone = buttonGrid.cloneNode(true)
-      grid.parentNode.replaceChild(gridClone, grid)
-      buttonGrid.parentNode.replaceChild(buttonGridClone, buttonGrid)
+      removeEListenerAll()
     } else if (squares[i].getAttribute('id') === 'blank') {
       // boolean for a location of the index
       const isAtLeft = i % width === 0
@@ -151,7 +150,7 @@ function removeButtons (i) {
       // delete buttons in each type of indexes
       if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
         for (let a = 0; a < ulCheck.length; a++) {
-          if (squares[ulCheck[a] + i].getAttribute('class', 'opened')) {
+          if (squares[ulCheck[a] + i].getAttribute('class') === 'opened') {
             continue
           } else {
             removeButtons(ulCheck[a] + i)
@@ -159,7 +158,7 @@ function removeButtons (i) {
         }
       } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
         for (let a = 0; a < uCheck.length; a++) {
-          if (squares[uCheck[a] + i].getAttribute('class', 'opened')) {
+          if (squares[uCheck[a] + i].getAttribute('class') === 'opened') {
             continue
           } else {
             removeButtons(uCheck[a] + i)
@@ -167,7 +166,7 @@ function removeButtons (i) {
         }
       } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
         for (let a = 0; a < urCheck.length; a++) {
-          if (squares[urCheck[a] + i].getAttribute('class', 'opened')) {
+          if (squares[urCheck[a] + i].getAttribute('class') === 'opened') {
             continue
           } else {
             removeButtons(urCheck[a] + i)
@@ -175,7 +174,7 @@ function removeButtons (i) {
         }
       } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
         for (let a = 0; a < lCheck.length; a++) {
-          if (squares[lCheck[a] + i].getAttribute('class', 'opened')) {
+          if (squares[lCheck[a] + i].getAttribute('class') === 'opened') {
             continue
           } else {
             removeButtons(lCheck[a] + i)
@@ -183,7 +182,7 @@ function removeButtons (i) {
         }
       } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // MIddle
         for (let a = 0; a < mCheck.length; a++) {
-          if (squares[mCheck[a] + i].getAttribute('class', 'opened')) {
+          if (squares[mCheck[a] + i].getAttribute('class') === 'opened') {
             continue
           } else {
             removeButtons(mCheck[a] + i)
@@ -191,7 +190,7 @@ function removeButtons (i) {
         }
       } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
         for (let a = 0; a < rCheck.length; a++) {
-          if (squares[rCheck[a] + i].getAttribute('class', 'opened')) {
+          if (squares[rCheck[a] + i].getAttribute('class') === 'opened') {
             continue
           } else {
             removeButtons(rCheck[a] + i)
@@ -199,7 +198,7 @@ function removeButtons (i) {
         }
       } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
         for (let a = 0; a < dlCheck.length; a++) {
-          if (squares[dlCheck[a] + i].getAttribute('class', 'opened')) {
+          if (squares[dlCheck[a] + i].getAttribute('class') === 'opened') {
             continue
           } else {
             removeButtons(dlCheck[a] + i)
@@ -207,7 +206,7 @@ function removeButtons (i) {
         }
       } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
         for (let a = 0; a < dCheck.length; a++) {
-          if (squares[dCheck[a] + i].getAttribute('class', 'opened')) {
+          if (squares[dCheck[a] + i].getAttribute('class') === 'opened') {
             continue
           } else {
             removeButtons(dCheck[a] + i)
@@ -215,13 +214,14 @@ function removeButtons (i) {
         }
       } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
         for (let a = 0; a < drCheck.length; a++) {
-          if (squares[drCheck[a] + i].getAttribute('class', 'opened')) {
+          if (squares[drCheck[a] + i].getAttribute('class') === 'opened') {
             continue
           } else {
             removeButtons(drCheck[a] + i)
           }
         }
       }
+    gameClear(i)
     }
   }
 }
@@ -238,35 +238,138 @@ function flag (i) {
     document.getElementById('minecount').innerHTML = minecount
   }
 }
+// autoclick(wheel click) function
+function autoClick (index) {
+  const isAtLeft = index % width === 0
+  const isAtRight = index % width === width - 1
+  const isAtTop = Math.floor(index / width) === 0
+  const isAtBottom = Math.floor(index / width) === height - 1
+  let flagQuantity = 0
+  // check the number of flags around an index
+  if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
+    for (let a = 0; a < ulCheck.length; a++) {
+      if (inputList[ulCheck[a] + index].classList.contains('field-button-flagged')) {
+        flagQuantity++
+      }
+    }
+  } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
+    for (let a = 0; a < uCheck.length; a++) {
+      if (inputList[uCheck[a] + index].classList.contains('field-button-flagged')) {
+        flagQuantity++
+      }
+    }
+  } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
+    for (let a = 0; a < urCheck.length; a++) {
+      if (inputList[urCheck[a] + index].classList.contains('field-button-flagged')) {
+        flagQuantity++
+      }
+    }
+  } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
+    for (let a = 0; a < lCheck.length; a++) {
+      if (inputList[lCheck[a] + index].classList.contains('field-button-flagged')) {
+        flagQuantity++
+      }
+    }
+  } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // MIddle
+    for (let a = 0; a < mCheck.length; a++) {
+      if (inputList[mCheck[a] + index].classList.contains('field-button-flagged')) {
+        flagQuantity++
+      }
+    }
+  } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
+    for (let a = 0; a < rCheck.length; a++) {
+      if (inputList[rCheck[a] + index].classList.contains('field-button-flagged')) {
+        flagQuantity++
+      }
+    }
+  } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
+    for (let a = 0; a < drCheck.length; a++) {
+      if (inputList[dlCheck[a] + index].classList.contains('field-button-flagged')) {
+        flagQuantity++
+      }
+    }
+  } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
+    for (let a = 0; a < dCheck.length; a++) {
+      if (inputList[dCheck[a] + index].classList.contains('field-button-flagged')) {
+        flagQuantity++
+      }
+    }
+  } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
+    for (let a = 0; a < drCheck.length; a++) {
+      if (inputList[drCheck[a] + index].classList.contains('field-button-flagged')) {
+        flagQuantity++
+      }
+    }
+  }
+  if (Number(squares[index].innerHTML) === flagQuantity) {
+    if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
+      ulCheck.forEach(element => removeButtons(element + index))
+    } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
+      uCheck.forEach(element => removeButtons(element + index))
+    } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
+      urCheck.forEach(element => removeButtons(element + index))
+    } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
+      lCheck.forEach(element => removeButtons(element + index))
+    } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // MIddle
+      mCheck.forEach(element => removeButtons(element + index))
+    } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
+      rCheck.forEach(element => removeButtons(element + index))
+    } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
+      dlCheck.forEach(element => removeButtons(element + index))
+    } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
+      dCheck.forEach(element => removeButtons(element + index))
+    } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
+      drCheck.forEach(element => removeButtons(element + index))
+    }
+  }
+}
 // Add functions on buttons
-function assignFunction () {
+function assignButtonFunction () {
   for (let index = 0; index < buttons.length; index++) {
-    buttons[index].setAttribute('id', index)
-    buttons[index].addEventListener('mouseup', () => {
-      mouseControl(event, index)
+    buttons[index].addEventListener('mouseup', (event) => {
+      buttonControl(event, index)
+    })
+  }
+}
+// Add functions on field
+function assignFieldFunction () {
+  for (let index = 0; index < squares.length; index++) {
+    squares[index].addEventListener('mouseup', (event) => {
+      fieldControl(event, index)
     })
   }
 }
 // game clear
-function gameClear(index) {
+function gameClear (index) {
   if ((normalIndexCount === 0) && (squares[index].getAttribute('id') !== 'mine')) {
     alert('축하드립니다!\n운빨 망겜에서 승리하셨습니다!')
-    let gridClone = grid.cloneNode(true), buttonGridClone = buttonGrid.cloneNode(true)
-    grid.parentNode.replaceChild(gridClone, grid)
-    buttonGrid.parentNode.replaceChild(buttonGridClone, buttonGrid)
+    removeEListenerAll()
+  } else {
   }
 }
-// mouse control function
-function mouseControl(event, index) {
+// button control function
+function buttonControl (event, index) {
   if (event.button === 0) {
     removeButtons(index)
-    gameClear(index)
   } else if (event.button === 1) {
-    alert(e.button + ' has no function yet')
+    alert(event.button + ' has no function yet')
   } else if (event.button === 2) {
     flag(index)
   }
 }
+function fieldControl (event, index) {
+  if ((event.button === 0) || (event.button === 1)) {
+    autoClick(index)
+  }
+}
+// remove button event
+function removeEListenerAll() {
+  let gridClone = grid.cloneNode(true)
+  let buttonGridClone = buttonGrid.cloneNode(true)
+  grid.parentNode.replaceChild(gridClone, grid)
+  buttonGrid.parentNode.replaceChild(buttonGridClone, buttonGrid)
+}
 generateField()
 insertNumbers()
-assignFunction()
+assignButtonFunction()
+assignFieldFunction()
