@@ -29,6 +29,7 @@ const rCheck = [-width - 1, -width, -1, width - 1, width] // Right Edge
 const dlCheck = [-width, -width + 1, 1] // DL Corner
 const dCheck = [-width - 1, -width, -width + 1, -1, 1] // D Edge
 const drCheck = [-width - 1, -width, -1] // DR Corner
+// set timer
 let time = Number(document.getElementById('timer').innerHTML)
 let timerId = null
 let clickCount = 0
@@ -346,7 +347,7 @@ function assignFieldFunction () {
 // game clear
 function gameClear (index) {
   if ((normalIndexCount === 0) && (squares[index].getAttribute('id') !== 'mine')) {
-    alert('축하드립니다!\n운빨 망겜에서 승리하셨습니다!')
+    alert('축하드립니다!\n운빨 망겜에서 승리하셨습니다!\n기록: ' + time + '초')
     removeEListenerAll()
     clearInterval(timerId)
   }
