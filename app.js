@@ -29,6 +29,9 @@ const rCheck = [-width - 1, -width, -1, width - 1, width] // Right Edge
 const dlCheck = [-width, -width + 1, 1] // DL Corner
 const dCheck = [-width - 1, -width, -width + 1, -1, 1] // D Edge
 const drCheck = [-width - 1, -width, -1] // DR Corner
+let time = Number(document.getElementById('timer').innerHTML)
+let timerId = null
+let clickCount = 0
 // generate a mine field
 function generateField () {
   while (mineNumber < minecount) {
@@ -132,6 +135,7 @@ function removeButtons (i) {
     normalIndexCount--
     gameClear(i)
     if ((squares[i].getAttribute('id') !== 'blank') && (squares[i].getAttribute('id') === 'mine')) {
+      clearInterval(timerId)
       mines.forEach(index => {
         if (!(flagged)) {
           squares[i].setAttribute('class', 'mine')
@@ -344,13 +348,20 @@ function gameClear (index) {
   if ((normalIndexCount === 0) && (squares[index].getAttribute('id') !== 'mine')) {
     alert('축하드립니다!\n운빨 망겜에서 승리하셨습니다!')
     removeEListenerAll()
-  } else {
+    clearInterval(timerId)
   }
 }
 // button control function
 function buttonControl (event, index) {
   if (event.button === 0) {
+    clickCount++
     removeButtons(index)
+    if (clickCount === 1) {
+      timerId = setInterval(() => {
+        time++
+        document.getElementById('timer').innerHTML = time
+      }, 1000)
+    }
   } else if (event.button === 1) {
     alert(event.button + ' has no function yet')
   } else if (event.button === 2) {
