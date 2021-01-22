@@ -29,6 +29,33 @@ const rCheck = [-width - 1, -width, -1, width - 1, width] // Right Edge
 const dlCheck = [-width, -width + 1, 1] // DL Corner
 const dCheck = [-width - 1, -width, -width + 1, -1, 1] // D Edge
 const drCheck = [-width - 1, -width, -1] // DR Corner
+// return a boolean for a location of index
+function checkLocation (index) {
+  let location = ['ULCorner','UEdge','URCorner','LEdge', 'Middle', 'REdge', 'DLCorner', 'DEdge', 'DRCorner']
+  const isAtLeft = index % width === 0
+  const isAtRight = index % width === width - 1
+  const isAtTop = Math.floor(index / width) === 0
+  const isAtBottom = Math.floor(index / width) === height - 1
+  if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
+    return location[0]
+  } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
+    return location[1]
+  } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
+    return location[2]
+  } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
+    return location[3]
+  } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // MIddle
+    return location[4]
+  } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
+    return location[5]
+  } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
+    return location[6]
+  } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
+    return location[7]
+  } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
+    return location[8]
+  }
+}
 // set timer
 let time = Number(document.getElementById('timer').innerHTML)
 let timerId = null
@@ -51,61 +78,57 @@ function insertNumbers () {
   for (let index = 0; index < squares.length; index++) {
     let mineQuantity = 0
     if (!(squares[index].classList.contains('mine'))) {
-      // boolean for a location of the index
-      const isAtLeft = index % width === 0
-      const isAtRight = index % width === width - 1
-      const isAtTop = Math.floor(index / width) === 0
-      const isAtBottom = Math.floor(index / width) === height - 1
+      checkLocation(index)
       // choose a number for each type of indexes
-      if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
+      if (checkLocation(index) === 'ULCorner') { // UL Corner
         for (let a = 0; a < ulCheck.length; a++) {
           if (squares[ulCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
+      } else if (checkLocation(index) === 'UEdge') { // U Edge
         for (let a = 0; a < uCheck.length; a++) {
           if (squares[uCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
+      } else if (checkLocation(index) === 'URCorner') { // UR Corner
         for (let a = 0; a < urCheck.length; a++) {
           if (squares[urCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
+      } else if (checkLocation(index) === 'LEdge') { // L Edge
         for (let a = 0; a < lCheck.length; a++) {
           if (squares[lCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // MIddle
+      } else if (checkLocation(index) === 'Middle') { // MIddle
         for (let a = 0; a < mCheck.length; a++) {
           if (squares[mCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
+      } else if (checkLocation(index) === 'REdge') { // R Edge
         for (let a = 0; a < rCheck.length; a++) {
           if (squares[rCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
+      } else if (checkLocation(index) === 'DLCorner') { // DL Corner
         for (let a = 0; a < drCheck.length; a++) {
           if (squares[dlCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
+      } else if (checkLocation(index) === 'DEdge') { // D Edge
         for (let a = 0; a < dCheck.length; a++) {
           if (squares[dCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
+      } else if (checkLocation(index) === 'DRCorner') { // DR Corner
         for (let a = 0; a < drCheck.length; a++) {
           if (squares[drCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
@@ -148,12 +171,9 @@ function removeButtons (i) {
       removeEListenerAll()
     } else if (squares[i].getAttribute('id') === 'blank') {
       // boolean for a location of the index
-      const isAtLeft = i % width === 0
-      const isAtRight = i % width === width - 1
-      const isAtTop = Math.floor(i / width) === 0
-      const isAtBottom = Math.floor(i / width) === height - 1
+      checkLocation(i)
       // delete buttons in each type of indexes
-      if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
+      if (checkLocation(i) === 'ULCorner') { // UL Corner
         for (let a = 0; a < ulCheck.length; a++) {
           if (squares[ulCheck[a] + i].getAttribute('class') === 'opened') {
             continue
@@ -161,7 +181,7 @@ function removeButtons (i) {
             removeButtons(ulCheck[a] + i)
           }
         }
-      } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
+      } else if (checkLocation(i) === 'UEdge') { // U Edge
         for (let a = 0; a < uCheck.length; a++) {
           if (squares[uCheck[a] + i].getAttribute('class') === 'opened') {
             continue
@@ -169,7 +189,7 @@ function removeButtons (i) {
             removeButtons(uCheck[a] + i)
           }
         }
-      } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
+      } else if (checkLocation(i) === 'URCorner') { // UR Corner
         for (let a = 0; a < urCheck.length; a++) {
           if (squares[urCheck[a] + i].getAttribute('class') === 'opened') {
             continue
@@ -177,7 +197,7 @@ function removeButtons (i) {
             removeButtons(urCheck[a] + i)
           }
         }
-      } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
+      } else if (checkLocation(i) === 'LEdge') { // L Edge
         for (let a = 0; a < lCheck.length; a++) {
           if (squares[lCheck[a] + i].getAttribute('class') === 'opened') {
             continue
@@ -185,7 +205,7 @@ function removeButtons (i) {
             removeButtons(lCheck[a] + i)
           }
         }
-      } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // MIddle
+      } else if (checkLocation(i) === 'Middle') { // MIddle
         for (let a = 0; a < mCheck.length; a++) {
           if (squares[mCheck[a] + i].getAttribute('class') === 'opened') {
             continue
@@ -193,7 +213,7 @@ function removeButtons (i) {
             removeButtons(mCheck[a] + i)
           }
         }
-      } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
+      } else if (checkLocation(i) === 'REdge') { // R Edge
         for (let a = 0; a < rCheck.length; a++) {
           if (squares[rCheck[a] + i].getAttribute('class') === 'opened') {
             continue
@@ -201,7 +221,7 @@ function removeButtons (i) {
             removeButtons(rCheck[a] + i)
           }
         }
-      } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
+      } else if (checkLocation(i) === 'DLCorner') { // DL Corner
         for (let a = 0; a < dlCheck.length; a++) {
           if (squares[dlCheck[a] + i].getAttribute('class') === 'opened') {
             continue
@@ -209,7 +229,7 @@ function removeButtons (i) {
             removeButtons(dlCheck[a] + i)
           }
         }
-      } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
+      } else if (checkLocation(i) === 'DEdge') { // D Edge
         for (let a = 0; a < dCheck.length; a++) {
           if (squares[dCheck[a] + i].getAttribute('class') === 'opened') {
             continue
@@ -217,7 +237,7 @@ function removeButtons (i) {
             removeButtons(dCheck[a] + i)
           }
         }
-      } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
+      } else if (checkLocation(i) === 'DRCorner') { // DR Corner
         for (let a = 0; a < drCheck.length; a++) {
           if (squares[drCheck[a] + i].getAttribute('class') === 'opened') {
             continue
@@ -226,7 +246,7 @@ function removeButtons (i) {
           }
         }
       }
-    gameClear(i)
+      gameClear(i)
     }
   }
 }
@@ -245,61 +265,58 @@ function flag (i) {
 }
 // autoclick(wheel click) function
 function autoClick (index) {
-  const isAtLeft = index % width === 0
-  const isAtRight = index % width === width - 1
-  const isAtTop = Math.floor(index / width) === 0
-  const isAtBottom = Math.floor(index / width) === height - 1
+  checkLocation(index)
   let flagQuantity = 0
   // check the number of flags around an index
-  if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
+  if (checkLocation(index) === 'ULCorner') { // UL Corner
     for (let a = 0; a < ulCheck.length; a++) {
       if (inputList[ulCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
+  } else if (checkLocation(index) === 'UEdge') { // U Edge
     for (let a = 0; a < uCheck.length; a++) {
       if (inputList[uCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
+  } else if (checkLocation(index) === 'URCorner') { // UR Corner
     for (let a = 0; a < urCheck.length; a++) {
       if (inputList[urCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
+  } else if (checkLocation(index) === 'LEdge') { // L Edge
     for (let a = 0; a < lCheck.length; a++) {
       if (inputList[lCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // MIddle
+  } else if (checkLocation(index) === 'Middle') { // MIddle
     for (let a = 0; a < mCheck.length; a++) {
       if (inputList[mCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
+  } else if (checkLocation(index) === 'REdge') { // R Edge
     for (let a = 0; a < rCheck.length; a++) {
       if (inputList[rCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
+  } else if (checkLocation(index) === 'DLCorer') { // DL Corner
     for (let a = 0; a < drCheck.length; a++) {
       if (inputList[dlCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
+  } else if (checkLocation(index) === 'DEdge') { // D Edge
     for (let a = 0; a < dCheck.length; a++) {
       if (inputList[dCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
+  } else if (checkLocation(index) === 'DRCorner') { // DR Corner
     for (let a = 0; a < drCheck.length; a++) {
       if (inputList[drCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
@@ -307,23 +324,23 @@ function autoClick (index) {
     }
   }
   if (Number(squares[index].innerHTML) === flagQuantity) {
-    if ((isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // UL Corner
+    if (checkLocation(index) === 'ULCorner') { // UL Corner
       ulCheck.forEach(element => removeButtons(element + index))
-    } else if ((!isAtLeft) && (!isAtRight) && (isAtTop) && (!isAtBottom)) { // U Edge
+    } else if (checkLocation(index) === 'UEdge') { // U Edge
       uCheck.forEach(element => removeButtons(element + index))
-    } else if ((!isAtLeft) && (isAtRight) && (isAtTop) && (!isAtBottom)) { // UR Corner
+    } else if (checkLocation(index) === 'URCorner') { // UR Corner
       urCheck.forEach(element => removeButtons(element + index))
-    } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // L Edge
+    } else if (checkLocation(index) === 'LEdge') { // L Edge
       lCheck.forEach(element => removeButtons(element + index))
-    } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (!isAtBottom)) { // MIddle
+    } else if (checkLocation(index) === 'Middle') { // MIddle
       mCheck.forEach(element => removeButtons(element + index))
-    } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (!isAtBottom)) { // R Edge
+    } else if (checkLocation(index) === 'REdge') { // R Edge
       rCheck.forEach(element => removeButtons(element + index))
-    } else if ((isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // DL Corner
+    } else if (checkLocation(index) === 'DLCorer') { // DL Corner
       dlCheck.forEach(element => removeButtons(element + index))
-    } else if ((!isAtLeft) && (!isAtRight) && (!isAtTop) && (isAtBottom)) { // D Edge
+    } else if (checkLocation(index) === 'DEdge') { // D Edge
       dCheck.forEach(element => removeButtons(element + index))
-    } else if ((!isAtLeft) && (isAtRight) && (!isAtTop) && (isAtBottom)) { // DR Corner
+    } else if (checkLocation(index) === 'DRCorner') { // DR Corner
       drCheck.forEach(element => removeButtons(element + index))
     }
   }
@@ -357,7 +374,7 @@ function buttonControl (event, index) {
   if (event.button === 0) {
     clickCount++
     removeButtons(index)
-    if (clickCount === 1) {
+    if ((clickCount === 1) && !(squares[index].classList.contains('mine'))) {
       timerId = setInterval(() => {
         time++
         document.getElementById('timer').innerHTML = time
@@ -376,8 +393,8 @@ function fieldControl (event, index) {
 }
 // remove button event
 function removeEListenerAll() {
-  let gridClone = grid.cloneNode(true)
-  let buttonGridClone = buttonGrid.cloneNode(true)
+  const gridClone = grid.cloneNode(true)
+  const buttonGridClone = buttonGrid.cloneNode(true)
   grid.parentNode.replaceChild(gridClone, grid)
   buttonGrid.parentNode.replaceChild(buttonGridClone, buttonGrid)
 }
