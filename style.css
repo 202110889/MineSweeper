@@ -32,6 +32,16 @@
   width: 40px;
   height: 40px;
 }
+.field-button-pressed{
+  background: url(field-button-pressed.png);
+  width: 40px;
+  height: 40px;
+}
+.field-button-flagged{
+  background: url(field-button-flagged.png);
+  width: 40px;
+  height: 40px;
+}
 .opened{
   width: 40px;
   height: 40px;
@@ -44,8 +54,6 @@
   background-color: cyan;
   font-size: 30px;
 }
-.field-button-flagged{
-  background:url(field-button-flagged.png);
-  width: 40px;
-  height: 40px;
+.seed{
+  visibility: hidden;
 }

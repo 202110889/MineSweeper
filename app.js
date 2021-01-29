@@ -4,7 +4,7 @@ const buttonGrid = document.getElementsByClassName('buttons')[0]
 let buttons = Array.from(buttonGrid.getElementsByTagName('div'))
 let mineNumber = 0
 const mines = []
-const inputList = Array.from(buttonGrid.getElementsByTagName('input'))
+const buttonList = Array.from(buttonGrid.getElementsByTagName('button'))
 // get info from index
 let indexSize = window.getComputedStyle(squares[0]).getPropertyValue('width')
 indexSize = Number(indexSize.slice(0, -2)) // delete 'px'
@@ -31,7 +31,7 @@ const dCheck = [-width - 1, -width, -width + 1, -1, 1] // D Edge
 const drCheck = [-width - 1, -width, -1] // DR Corner
 // return a boolean for a location of index
 function checkLocation (index) {
-  let location = ['ULCorner','UEdge','URCorner','LEdge', 'Middle', 'REdge', 'DLCorner', 'DEdge', 'DRCorner']
+  const location = ['ULCorner', 'UEdge', 'URCorner', 'LEdge', 'Middle', 'REdge', 'DLCorner', 'DEdge', 'DRCorner']
   const isAtLeft = index % width === 0
   const isAtRight = index % width === width - 1
   const isAtTop = Math.floor(index / width) === 0
@@ -152,8 +152,9 @@ document.addEventListener('contextmenu', e => e.preventDefault())
 // functions of buttons
 // remove buttons
 function removeButtons (i) {
-  const flagged = inputList[i].classList.contains('field-button-flagged')
+  const flagged = buttonList[i].classList.contains('field-button-flagged')
   if (!(flagged) && (buttons[i].style.visibility !== 'hidden')) {
+    buttonList[i].classList.add('opened')
     buttons[i].style.visibility = 'hidden'
     squares[i].setAttribute('class', 'opened')
     normalIndexCount--
@@ -163,7 +164,7 @@ function removeButtons (i) {
       mines.forEach(index => {
         if (!(flagged)) {
           squares[i].setAttribute('class', 'mine')
-          inputList[index].style.visibility = 'hidden'
+          buttonList[index].style.visibility = 'hidden'
           squares[index].style.backgroundColor = 'red'
         }
       })
@@ -251,14 +252,14 @@ function removeButtons (i) {
   }
 }
 // put/remove a flag on a button
-function flag (i) {
-  const flagged = inputList[i].classList.contains('field-button-flagged')
+function flag (index) {
+  const flagged = buttonList[index].classList.contains('field-button-flagged')
   if (flagged) {
-    inputList[i].setAttribute('class', 'field-button')
+    buttonList[index].setAttribute('class', 'field-button')
     minecount++
     document.getElementById('minecount').innerHTML = minecount
   } else {
-    inputList[i].setAttribute('class', 'field-button-flagged')
+    buttonList[index].setAttribute('class', 'field-button-flagged')
     minecount--
     document.getElementById('minecount').innerHTML = minecount
   }
@@ -270,60 +271,60 @@ function autoClick (index) {
   // check the number of flags around an index
   if (checkLocation(index) === 'ULCorner') { // UL Corner
     for (let a = 0; a < ulCheck.length; a++) {
-      if (inputList[ulCheck[a] + index].classList.contains('field-button-flagged')) {
+      if (buttonList[ulCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
   } else if (checkLocation(index) === 'UEdge') { // U Edge
     for (let a = 0; a < uCheck.length; a++) {
-      if (inputList[uCheck[a] + index].classList.contains('field-button-flagged')) {
+      if (buttonList[uCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
   } else if (checkLocation(index) === 'URCorner') { // UR Corner
     for (let a = 0; a < urCheck.length; a++) {
-      if (inputList[urCheck[a] + index].classList.contains('field-button-flagged')) {
+      if (buttonList[urCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
   } else if (checkLocation(index) === 'LEdge') { // L Edge
     for (let a = 0; a < lCheck.length; a++) {
-      if (inputList[lCheck[a] + index].classList.contains('field-button-flagged')) {
+      if (buttonList[lCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
   } else if (checkLocation(index) === 'Middle') { // MIddle
     for (let a = 0; a < mCheck.length; a++) {
-      if (inputList[mCheck[a] + index].classList.contains('field-button-flagged')) {
+      if (buttonList[mCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
   } else if (checkLocation(index) === 'REdge') { // R Edge
     for (let a = 0; a < rCheck.length; a++) {
-      if (inputList[rCheck[a] + index].classList.contains('field-button-flagged')) {
+      if (buttonList[rCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
   } else if (checkLocation(index) === 'DLCorer') { // DL Corner
     for (let a = 0; a < drCheck.length; a++) {
-      if (inputList[dlCheck[a] + index].classList.contains('field-button-flagged')) {
+      if (buttonList[dlCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
   } else if (checkLocation(index) === 'DEdge') { // D Edge
     for (let a = 0; a < dCheck.length; a++) {
-      if (inputList[dCheck[a] + index].classList.contains('field-button-flagged')) {
+      if (buttonList[dCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
   } else if (checkLocation(index) === 'DRCorner') { // DR Corner
     for (let a = 0; a < drCheck.length; a++) {
-      if (inputList[drCheck[a] + index].classList.contains('field-button-flagged')) {
+      if (buttonList[drCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
   }
-  if (Number(squares[index].innerHTML) === flagQuantity) {
+  if ((Number(squares[index].innerHTML) === flagQuantity) && (squares[index].getAttribute('class')) === 'opened') {
     if (checkLocation(index) === 'ULCorner') { // UL Corner
       ulCheck.forEach(element => removeButtons(element + index))
     } else if (checkLocation(index) === 'UEdge') { // U Edge
@@ -346,10 +347,28 @@ function autoClick (index) {
   }
 }
 // Add functions on buttons
+let clicked = false
 function assignButtonFunction () {
   for (let index = 0; index < buttons.length; index++) {
-    buttons[index].addEventListener('mouseup', (event) => {
+    buttonList[index].addEventListener('mousedown', (event) => {
+      if ((buttonList[index].getAttribute('class') === 'field-button') && (event.button === 0)) {
+        buttonList[index].setAttribute('class', 'field-button-pressed')
+        clicked = true
+      }
+    })
+    buttonList[index].addEventListener('mouseup', (event) => {
       buttonControl(event, index)
+      clicked = false
+    })
+    buttonList[index].addEventListener('mouseout', () => {
+      if (clicked) {
+        buttonList[index].setAttribute('class', 'field-button')
+      }
+    })
+    buttonList[index].addEventListener('mouseover', () => {
+      if ((clicked) && (buttonList[index].getAttribute('class') !== 'field-button-flagged')) {
+        buttonList[index].setAttribute('class', 'field-button-pressed')
+      }
     })
   }
 }
@@ -358,6 +377,7 @@ function assignFieldFunction () {
   for (let index = 0; index < squares.length; index++) {
     squares[index].addEventListener('mouseup', (event) => {
       fieldControl(event, index)
+      clicked = false
     })
   }
 }
@@ -374,16 +394,17 @@ function buttonControl (event, index) {
   if (event.button === 0) {
     clickCount++
     removeButtons(index)
-    if ((clickCount === 1) && !(squares[index].classList.contains('mine'))) {
-      timerId = setInterval(() => {
-        time++
-        document.getElementById('timer').innerHTML = time
-      }, 1000)
-    }
   } else if (event.button === 1) {
-    alert(event.button + ' has no function yet')
+    autoClick(index)
   } else if (event.button === 2) {
+    clickCount++
     flag(index)
+  }
+  if ((clickCount === 1) && !(squares[index].classList.contains('mine'))) { // start timer
+    timerId = setInterval(() => {
+      time++
+      document.getElementById('timer').innerHTML = time
+    }, 1000)
   }
 }
 function fieldControl (event, index) {
@@ -392,7 +413,7 @@ function fieldControl (event, index) {
   }
 }
 // remove button event
-function removeEListenerAll() {
+function removeEListenerAll () {
   const gridClone = grid.cloneNode(true)
   const buttonGridClone = buttonGrid.cloneNode(true)
   grid.parentNode.replaceChild(gridClone, grid)
