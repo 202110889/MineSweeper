@@ -19,6 +19,7 @@ height = Number(height.slice(0, -2)) // delete 'px'
 height = height / cellSize
 let minecount = Number(document.getElementById('minecount').innerHTML)
 let normalIndexCount = (width * height) - minecount
+let clicked = false
 // checklists for each type of indexes
 const ulCheck = [1, width, width + 1] // UL Corner
 const uCheck = [-1, 1, width - 1, width, width + 1] // U Edge
@@ -30,7 +31,7 @@ const dlCheck = [-width, -width + 1, 1] // DL Corner
 const dCheck = [-width - 1, -width, -width + 1, -1, 1] // D Edge
 const drCheck = [-width - 1, -width, -1] // DR Corner
 // return a boolean for a location of index
-function checkLocation (index) {
+function getLocationAttribute (index) {
   const location = ['ULCorner', 'UEdge', 'URCorner', 'LEdge', 'Middle', 'REdge', 'DLCorner', 'DEdge', 'DRCorner']
   const isAtLeft = index % width === 0
   const isAtRight = index % width === width - 1
@@ -78,57 +79,57 @@ function insertNumbers () {
   for (let index = 0; index < squares.length; index++) {
     let mineQuantity = 0
     if (!(squares[index].classList.contains('mine'))) {
-      checkLocation(index)
+      getLocationAttribute(index)
       // choose a number for each type of indexes
-      if (checkLocation(index) === 'ULCorner') { // UL Corner
+      if (getLocationAttribute(index) === 'ULCorner') { // UL Corner
         for (let a = 0; a < ulCheck.length; a++) {
           if (squares[ulCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if (checkLocation(index) === 'UEdge') { // U Edge
+      } else if (getLocationAttribute(index) === 'UEdge') { // U Edge
         for (let a = 0; a < uCheck.length; a++) {
           if (squares[uCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if (checkLocation(index) === 'URCorner') { // UR Corner
+      } else if (getLocationAttribute(index) === 'URCorner') { // UR Corner
         for (let a = 0; a < urCheck.length; a++) {
           if (squares[urCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if (checkLocation(index) === 'LEdge') { // L Edge
+      } else if (getLocationAttribute(index) === 'LEdge') { // L Edge
         for (let a = 0; a < lCheck.length; a++) {
           if (squares[lCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if (checkLocation(index) === 'Middle') { // MIddle
+      } else if (getLocationAttribute(index) === 'Middle') { // MIddle
         for (let a = 0; a < mCheck.length; a++) {
           if (squares[mCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if (checkLocation(index) === 'REdge') { // R Edge
+      } else if (getLocationAttribute(index) === 'REdge') { // R Edge
         for (let a = 0; a < rCheck.length; a++) {
           if (squares[rCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if (checkLocation(index) === 'DLCorner') { // DL Corner
+      } else if (getLocationAttribute(index) === 'DLCorner') { // DL Corner
         for (let a = 0; a < drCheck.length; a++) {
           if (squares[dlCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if (checkLocation(index) === 'DEdge') { // D Edge
+      } else if (getLocationAttribute(index) === 'DEdge') { // D Edge
         for (let a = 0; a < dCheck.length; a++) {
           if (squares[dCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
           }
         }
-      } else if (checkLocation(index) === 'DRCorner') { // DR Corner
+      } else if (getLocationAttribute(index) === 'DRCorner') { // DR Corner
         for (let a = 0; a < drCheck.length; a++) {
           if (squares[drCheck[a] + index].classList.contains('mine')) {
             mineQuantity++
@@ -153,94 +154,92 @@ document.addEventListener('contextmenu', e => e.preventDefault())
 // remove buttons
 function removeButtons (i) {
   const flagged = buttonList[i].classList.contains('field-button-flagged')
-  if (!(flagged) && (buttons[i].style.visibility !== 'hidden')) {
-    buttonList[i].classList.add('opened')
-    buttons[i].style.visibility = 'hidden'
-    squares[i].setAttribute('class', 'opened')
+  if (!(flagged) && (buttonList[i].getAttribute('class') !== 'opened-button')) {
     normalIndexCount--
-    gameClear(i)
+    buttonList[i].setAttribute('class', 'opened-button')
+    buttons[i].setAttribute('class', 'opened-button')
+    squares[i].setAttribute('class', 'opened-field')
     if ((squares[i].getAttribute('id') !== 'blank') && (squares[i].getAttribute('id') === 'mine')) {
       clearInterval(timerId)
       mines.forEach(index => {
         if (!(flagged)) {
           squares[i].setAttribute('class', 'mine')
-          buttonList[index].style.visibility = 'hidden'
+          buttonList[index].setAttribute('class', 'opened-button')
           squares[index].style.backgroundColor = 'red'
         }
       })
-      alert('운빨망겜')
+      alert('망겜')
       removeEListenerAll()
     } else if (squares[i].getAttribute('id') === 'blank') {
       // boolean for a location of the index
-      checkLocation(i)
       // delete buttons in each type of indexes
-      if (checkLocation(i) === 'ULCorner') { // UL Corner
+      if (getLocationAttribute(i) === 'ULCorner') { // UL Corner
         for (let a = 0; a < ulCheck.length; a++) {
-          if (squares[ulCheck[a] + i].getAttribute('class') === 'opened') {
+          if (squares[ulCheck[a] + i].getAttribute('class') === 'opened-field') {
             continue
           } else {
             removeButtons(ulCheck[a] + i)
           }
         }
-      } else if (checkLocation(i) === 'UEdge') { // U Edge
+      } else if (getLocationAttribute(i) === 'UEdge') { // U Edge
         for (let a = 0; a < uCheck.length; a++) {
-          if (squares[uCheck[a] + i].getAttribute('class') === 'opened') {
+          if (squares[uCheck[a] + i].getAttribute('class') === 'opened-field') {
             continue
           } else {
             removeButtons(uCheck[a] + i)
           }
         }
-      } else if (checkLocation(i) === 'URCorner') { // UR Corner
+      } else if (getLocationAttribute(i) === 'URCorner') { // UR Corner
         for (let a = 0; a < urCheck.length; a++) {
-          if (squares[urCheck[a] + i].getAttribute('class') === 'opened') {
+          if (squares[urCheck[a] + i].getAttribute('class') === 'opened-field') {
             continue
           } else {
             removeButtons(urCheck[a] + i)
           }
         }
-      } else if (checkLocation(i) === 'LEdge') { // L Edge
+      } else if (getLocationAttribute(i) === 'LEdge') { // L Edge
         for (let a = 0; a < lCheck.length; a++) {
-          if (squares[lCheck[a] + i].getAttribute('class') === 'opened') {
+          if (squares[lCheck[a] + i].getAttribute('class') === 'opened-field') {
             continue
           } else {
             removeButtons(lCheck[a] + i)
           }
         }
-      } else if (checkLocation(i) === 'Middle') { // MIddle
+      } else if (getLocationAttribute(i) === 'Middle') { // MIddle
         for (let a = 0; a < mCheck.length; a++) {
-          if (squares[mCheck[a] + i].getAttribute('class') === 'opened') {
+          if (squares[mCheck[a] + i].getAttribute('class') === 'opened-field') {
             continue
           } else {
             removeButtons(mCheck[a] + i)
           }
         }
-      } else if (checkLocation(i) === 'REdge') { // R Edge
+      } else if (getLocationAttribute(i) === 'REdge') { // R Edge
         for (let a = 0; a < rCheck.length; a++) {
-          if (squares[rCheck[a] + i].getAttribute('class') === 'opened') {
+          if (squares[rCheck[a] + i].getAttribute('class') === 'opened-field') {
             continue
           } else {
             removeButtons(rCheck[a] + i)
           }
         }
-      } else if (checkLocation(i) === 'DLCorner') { // DL Corner
+      } else if (getLocationAttribute(i) === 'DLCorner') { // DL Corner
         for (let a = 0; a < dlCheck.length; a++) {
-          if (squares[dlCheck[a] + i].getAttribute('class') === 'opened') {
+          if (squares[dlCheck[a] + i].getAttribute('class') === 'opened-field') {
             continue
           } else {
             removeButtons(dlCheck[a] + i)
           }
         }
-      } else if (checkLocation(i) === 'DEdge') { // D Edge
+      } else if (getLocationAttribute(i) === 'DEdge') { // D Edge
         for (let a = 0; a < dCheck.length; a++) {
-          if (squares[dCheck[a] + i].getAttribute('class') === 'opened') {
+          if (squares[dCheck[a] + i].getAttribute('class') === 'opened-field') {
             continue
           } else {
             removeButtons(dCheck[a] + i)
           }
         }
-      } else if (checkLocation(i) === 'DRCorner') { // DR Corner
+      } else if (getLocationAttribute(i) === 'DRCorner') { // DR Corner
         for (let a = 0; a < drCheck.length; a++) {
-          if (squares[drCheck[a] + i].getAttribute('class') === 'opened') {
+          if (squares[drCheck[a] + i].getAttribute('class') === 'opened-field') {
             continue
           } else {
             removeButtons(drCheck[a] + i)
@@ -266,107 +265,106 @@ function flag (index) {
 }
 // autoclick(wheel click) function
 function autoClick (index) {
-  checkLocation(index)
   let flagQuantity = 0
   // check the number of flags around an index
-  if (checkLocation(index) === 'ULCorner') { // UL Corner
+  if (getLocationAttribute(index) === 'ULCorner') { // UL Corner
     for (let a = 0; a < ulCheck.length; a++) {
       if (buttonList[ulCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if (checkLocation(index) === 'UEdge') { // U Edge
+  } else if (getLocationAttribute(index) === 'UEdge') { // U Edge
     for (let a = 0; a < uCheck.length; a++) {
       if (buttonList[uCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if (checkLocation(index) === 'URCorner') { // UR Corner
+  } else if (getLocationAttribute(index) === 'URCorner') { // UR Corner
     for (let a = 0; a < urCheck.length; a++) {
       if (buttonList[urCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if (checkLocation(index) === 'LEdge') { // L Edge
+  } else if (getLocationAttribute(index) === 'LEdge') { // L Edge
     for (let a = 0; a < lCheck.length; a++) {
       if (buttonList[lCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if (checkLocation(index) === 'Middle') { // MIddle
+  } else if (getLocationAttribute(index) === 'Middle') { // MIddle
     for (let a = 0; a < mCheck.length; a++) {
       if (buttonList[mCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if (checkLocation(index) === 'REdge') { // R Edge
+  } else if (getLocationAttribute(index) === 'REdge') { // R Edge
     for (let a = 0; a < rCheck.length; a++) {
       if (buttonList[rCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if (checkLocation(index) === 'DLCorer') { // DL Corner
+  } else if (getLocationAttribute(index) === 'DLCorer') { // DL Corner
     for (let a = 0; a < drCheck.length; a++) {
       if (buttonList[dlCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if (checkLocation(index) === 'DEdge') { // D Edge
+  } else if (getLocationAttribute(index) === 'DEdge') { // D Edge
     for (let a = 0; a < dCheck.length; a++) {
       if (buttonList[dCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
-  } else if (checkLocation(index) === 'DRCorner') { // DR Corner
+  } else if (getLocationAttribute(index) === 'DRCorner') { // DR Corner
     for (let a = 0; a < drCheck.length; a++) {
       if (buttonList[drCheck[a] + index].classList.contains('field-button-flagged')) {
         flagQuantity++
       }
     }
   }
-  if ((Number(squares[index].innerHTML) === flagQuantity) && (squares[index].getAttribute('class')) === 'opened') {
-    if (checkLocation(index) === 'ULCorner') { // UL Corner
+  if ((Number(squares[index].innerHTML) === flagQuantity) && (squares[index].getAttribute('class')) === 'opened-field') {
+    if (getLocationAttribute(index) === 'ULCorner') { // UL Corner
       ulCheck.forEach(element => removeButtons(element + index))
-    } else if (checkLocation(index) === 'UEdge') { // U Edge
+    } else if (getLocationAttribute(index) === 'UEdge') { // U Edge
       uCheck.forEach(element => removeButtons(element + index))
-    } else if (checkLocation(index) === 'URCorner') { // UR Corner
+    } else if (getLocationAttribute(index) === 'URCorner') { // UR Corner
       urCheck.forEach(element => removeButtons(element + index))
-    } else if (checkLocation(index) === 'LEdge') { // L Edge
+    } else if (getLocationAttribute(index) === 'LEdge') { // L Edge
       lCheck.forEach(element => removeButtons(element + index))
-    } else if (checkLocation(index) === 'Middle') { // MIddle
+    } else if (getLocationAttribute(index) === 'Middle') { // MIddle
       mCheck.forEach(element => removeButtons(element + index))
-    } else if (checkLocation(index) === 'REdge') { // R Edge
+    } else if (getLocationAttribute(index) === 'REdge') { // R Edge
       rCheck.forEach(element => removeButtons(element + index))
-    } else if (checkLocation(index) === 'DLCorer') { // DL Corner
+    } else if (getLocationAttribute(index) === 'DLCorer') { // DL Corner
       dlCheck.forEach(element => removeButtons(element + index))
-    } else if (checkLocation(index) === 'DEdge') { // D Edge
+    } else if (getLocationAttribute(index) === 'DEdge') { // D Edge
       dCheck.forEach(element => removeButtons(element + index))
-    } else if (checkLocation(index) === 'DRCorner') { // DR Corner
+    } else if (getLocationAttribute(index) === 'DRCorner') { // DR Corner
       drCheck.forEach(element => removeButtons(element + index))
     }
   }
 }
 // Add functions on buttons
-let clicked = false
 function assignButtonFunction () {
   for (let index = 0; index < buttons.length; index++) {
     buttonList[index].addEventListener('mousedown', (event) => {
+      clicked = true
       if ((buttonList[index].getAttribute('class') === 'field-button') && (event.button === 0)) {
         buttonList[index].setAttribute('class', 'field-button-pressed')
-        clicked = true
       }
     })
     buttonList[index].addEventListener('mouseup', (event) => {
-      buttonControl(event, index)
       clicked = false
+      buttonControl(event, index)
+      gameClear(index)
     })
     buttonList[index].addEventListener('mouseout', () => {
-      if (clicked) {
+      if ((clicked) && buttonList[index].getAttribute('class') !== 'field-button-flagged') {
         buttonList[index].setAttribute('class', 'field-button')
       }
     })
-    buttonList[index].addEventListener('mouseover', () => {
-      if ((clicked) && (buttonList[index].getAttribute('class') !== 'field-button-flagged')) {
+    buttonList[index].addEventListener('mouseover', (event) => {
+      if ((clicked) && (buttonList[index].getAttribute('class') !== 'field-button-flagged') && (event.button === 0)) {
         buttonList[index].setAttribute('class', 'field-button-pressed')
       }
     })
@@ -375,27 +373,155 @@ function assignButtonFunction () {
 // Add functions on field
 function assignFieldFunction () {
   for (let index = 0; index < squares.length; index++) {
-    squares[index].addEventListener('mouseup', (event) => {
+    squares[index].addEventListener('mousedown', () => {
+      clicked = true
+      if (getLocationAttribute(index) === 'ULCorner') {
+        for (let a = 0; a < ulCheck.length; a++) { // UL Corner
+          if (buttonList[index + ulCheck[a]].getAttribute('class') === 'field-button') {
+            buttonList[index + ulCheck[a]].setAttribute('class', 'field-button-pressed')
+          }
+        }
+      } else if (getLocationAttribute(index) === 'UEdge') {
+        for (let a = 0; a < uCheck.length; a++) {
+          if (buttonList[index + uCheck[a]].getAttribute('class') === 'field-button') {
+            buttonList[index + uCheck[a]].setAttribute('class', 'field-button-pressed')
+          }
+        }
+      } else if (getLocationAttribute(index) === 'URCorner') {
+        for (let a = 0; a < urCheck.length; a++) {
+          if (buttonList[index + urCheck[a]].getAttribute('class') === 'field-button') {
+            buttonList[index + urCheck[a]].setAttribute('class', 'field-button-pressed')
+          }
+        }
+      } else if (getLocationAttribute(index) === 'LEdge') {
+        for (let a = 0; a < lCheck.length; a++) {
+          if (buttonList[index + lCheck[a]].getAttribute('class') === 'field-button') {
+            buttonList[index + lCheck[a]].setAttribute('class', 'field-button-pressed')
+          }
+        }
+      } else if (getLocationAttribute(index) === 'Middle') {
+        for (let a = 0; a < mCheck.length; a++) {
+          if (buttonList[index + mCheck[a]].getAttribute('class') === 'field-button') {
+            buttonList[index + mCheck[a]].setAttribute('class', 'field-button-pressed')
+          }
+        }
+      } else if (getLocationAttribute(index) === 'REdge') {
+        for (let a = 0; a < rCheck.length; a++) {
+          if (buttonList[index + rCheck[a]].getAttribute('class') === 'field-button') {
+            buttonList[index + rCheck[a]].setAttribute('class', 'field-button-pressed')
+          }
+        }
+      } else if (getLocationAttribute(index) === 'DLCorner') {
+        for (let a = 0; a < dlCheck.length; a++) {
+          if (buttonList[index + dlCheck[a]].getAttribute('class') === 'field-button') {
+            buttonList[index + dlCheck[a]].setAttribute('class', 'field-button-pressed')
+          }
+        }
+      } else if (getLocationAttribute(index) === 'DEdge') {
+        for (let a = 0; a < dCheck.length; a++) {
+          if (buttonList[index + dCheck[a]].getAttribute('class') === 'field-button') {
+            buttonList[index + dCheck[a]].setAttribute('class', 'field-button-pressed')
+          }
+        }
+      } else if (getLocationAttribute(index) === 'DRCorner') {
+        for (let a = 0; a < drCheck.length; a++) {
+          if (buttonList[index + drCheck[a]].getAttribute('class') === 'field-button') {
+            buttonList[index + drCheck[a]].setAttribute('class', 'field-button-pressed')
+          }
+        }
+      }
+    })
+    squares[index].addEventListener('mouseout', event => {
+      for (let element = 0; element < buttonList.length; element++) {
+        if (buttonList[element].getAttribute('class') === 'field-button-pressed') {
+          buttonList[element].setAttribute('class' , 'field-button')
+        }
+      }
+    })
+    squares[index].addEventListener('mouseover', () => {
+      if (clicked) {
+        if (getLocationAttribute(index) === 'ULCorner') {
+          for (let a = 0; a < ulCheck.length; a++) { // UL Corner
+            if (buttonList[index + ulCheck[a]].getAttribute('class') === 'field-button') {
+              buttonList[index + ulCheck[a]].setAttribute('class', 'field-button-pressed')
+            }
+          }
+        } else if (getLocationAttribute(index) === 'UEdge') {
+          for (let a = 0; a < uCheck.length; a++) {
+            if (buttonList[index + uCheck[a]].getAttribute('class') === 'field-button') {
+              buttonList[index + uCheck[a]].setAttribute('class', 'field-button-pressed')
+            }
+          }
+        } else if (getLocationAttribute(index) === 'URCorner') {
+          for (let a = 0; a < urCheck.length; a++) {
+            if (buttonList[index + urCheck[a]].getAttribute('class') === 'field-button') {
+              buttonList[index + urCheck[a]].setAttribute('class', 'field-button-pressed')
+            }
+          }
+        } else if (getLocationAttribute(index) === 'LEdge') {
+          for (let a = 0; a < lCheck.length; a++) {
+            if (buttonList[index + lCheck[a]].getAttribute('class') === 'field-button') {
+              buttonList[index + lCheck[a]].setAttribute('class', 'field-button-pressed')
+            }
+          }
+        } else if (getLocationAttribute(index) === 'Middle') {
+          for (let a = 0; a < mCheck.length; a++) {
+            if (buttonList[index + mCheck[a]].getAttribute('class') === 'field-button') {
+              buttonList[index + mCheck[a]].setAttribute('class', 'field-button-pressed')
+            }
+          }
+        } else if (getLocationAttribute(index) === 'REdge') {
+          for (let a = 0; a < rCheck.length; a++) {
+            if (buttonList[index + rCheck[a]].getAttribute('class') === 'field-button') {
+              buttonList[index + rCheck[a]].setAttribute('class', 'field-button-pressed')
+            }
+          }
+        } else if (getLocationAttribute(index) === 'DLCorner') {
+          for (let a = 0; a < dlCheck.length; a++) {
+            if (buttonList[index + dlCheck[a]].getAttribute('class') === 'field-button') {
+              buttonList[index + dlCheck[a]].setAttribute('class', 'field-button-pressed')
+            }
+          }
+        } else if (getLocationAttribute(index) === 'DEdge') {
+          for (let a = 0; a < dCheck.length; a++) {
+            if (buttonList[index + dCheck[a]].getAttribute('class') === 'field-button') {
+              buttonList[index + dCheck[a]].setAttribute('class', 'field-button-pressed')
+            }
+          }
+        } else if (getLocationAttribute(index) === 'DRCorner') {
+          for (let a = 0; a < drCheck.length; a++) {
+            if (buttonList[index + drCheck[a]].getAttribute('class') === 'field-button') {
+              buttonList[index + drCheck[a]].setAttribute('class', 'field-button-pressed')
+            }
+          }
+        }
+      }
+    })
+    squares[index].addEventListener('mouseup', event => {
+      for (let element = 0; element < buttonList.length; element++) {
+        if (buttonList[element].getAttribute('class') === 'field-button-pressed') {
+          buttonList[element].setAttribute('class' , 'field-button')
+        }
+      }
       fieldControl(event, index)
       clicked = false
+      gameClear(index)
     })
   }
 }
 // game clear
 function gameClear (index) {
   if ((normalIndexCount === 0) && (squares[index].getAttribute('id') !== 'mine')) {
-    alert('축하드립니다!\n운빨 망겜에서 승리하셨습니다!\n기록: ' + time + '초')
+    alert('축하드립니다!\n기록: ' + time + '초')
     removeEListenerAll()
     clearInterval(timerId)
   }
 }
 // button control function
 function buttonControl (event, index) {
-  if (event.button === 0) {
+  if ((event.button === 0) || (event.button === 1)) {
     clickCount++
     removeButtons(index)
-  } else if (event.button === 1) {
-    autoClick(index)
   } else if (event.button === 2) {
     clickCount++
     flag(index)
@@ -410,6 +536,7 @@ function buttonControl (event, index) {
 function fieldControl (event, index) {
   if ((event.button === 0) || (event.button === 1)) {
     autoClick(index)
+    clicked = false
   }
 }
 // remove button event
