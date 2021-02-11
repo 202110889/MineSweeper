@@ -1,3 +1,4 @@
+/*jshint maxerr: 5000 */
 const grid = document.getElementById('field');
 const squares = Array.from(grid.getElementsByTagName('div'));
 const buttonGrid = document.getElementById('buttons');
@@ -33,6 +34,7 @@ const dlCheck = [-width, -width + 1, 1]; // DL Corner
 const dCheck = [-width - 1, -width, -width + 1, -1, 1]; // D Edge
 const drCheck = [-width - 1, -width, -1]; // DR Corner
 let mines = [];
+let bannedNumberList = [];
 let gameOver = false;
 
 // return a boolean for a location of index
@@ -68,23 +70,6 @@ function getLocationAttribute(index) {
 let time = Number(document.getElementById('timer').innerHTML);
 let timerId = null;
 let clickCount = 0;
-
-// generate a mine field
-function generateField() {
-  let mineNumber = 0;
-  while (mineNumber < minecount) {
-    mineNumber++;
-    const random = Math.floor(Math.random() * width * height);
-    if (mines.includes(random)) {
-      mineNumber--;
-    } else {
-      mines.push(random);
-      squares[random].setAttribute('id', 'mine');
-      squares[random].setAttribute('class', 'mine');
-    }
-  }
-}
-
 function insertNumbers() {
   for (let index = 0; index < squares.length; index++) {
     let mineQuantity = 0;
@@ -181,7 +166,6 @@ function removeButtons(i) {
           squares[index].style.backgroundColor = 'red';
         }
       });
-      alert('망겜');
       gameOver = true;
     } else if (squares[i].getAttribute('id') === 'blank') {
       // boolean for a location of the index
@@ -371,12 +355,23 @@ function assignButtonFunction() {
         if ((buttonList[index].getAttribute('class') === 'field-button') && (event.button === 0)) {
           buttonList[index].setAttribute('class', 'field-button-pressed');
         }
+        if (normalIndexCount === normalIndexCountBackup) {
+          genField(index);
+          insertNumbers();
+        }
       }
     });
     buttonList[index].addEventListener('mouseup', event => {
       if (!gameOver) {
         clicked = false;
+        clickCount++;
         buttonControl(event, index);
+        if ((clickCount === 1) && !(squares[index].classList.contains('mine'))) { // start timer
+          timerId = setInterval(() => {
+            time++;
+            document.getElementById('timer').innerHTML = time;
+          }, 1000);
+        }
         gameClear(index);
       }
     });
@@ -556,17 +551,9 @@ function gameClear(index) {
 // button control function
 function buttonControl(event, index) {
   if ((event.button === 0) || (event.button === 1)) {
-    clickCount++;
     removeButtons(index);
   } else if (event.button === 2) {
-    clickCount++;
     flag(index);
-  }
-  if ((clickCount === 1) && !(squares[index].classList.contains('mine'))) { // start timer
-    timerId = setInterval(() => {
-      time++;
-      document.getElementById('timer').innerHTML = time;
-    }, 1000);
   }
 }
 
@@ -584,6 +571,7 @@ function gameStart() {
     squares[index].style.backgroundColor = 'gray';
   });
   mines = [];
+  bannedNumberList = [];
   minecount = mineCountBackup;
   normalIndexCount = normalIndexCountBackup;
   clearInterval(timerId);
@@ -599,8 +587,6 @@ function gameStart() {
     buttons[index].removeAttribute('class');
     buttonList[index].setAttribute('class', 'field-button');
   }
-  generateField();
-  insertNumbers();
 }
 
 //assign gamestart function on button
@@ -609,4 +595,56 @@ assignButtonFunction();
 assignFieldFunction();
 gameStart();
 
-/*jshint maxerr: 1000 */
+// generate a mine field
+function genField(index) {
+  let mineNumber = 0;
+  bannedNumberList.push(index)
+  if (getLocationAttribute(index) === 'ULCorner') {
+    for (let a = 0; a < ulCheck.length; a++) {
+      bannedNumberList.push(index + ulCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'UEdge') {
+    for (let a = 0; a < uCheck.length; a++) {
+      bannedNumberList.push(index + uCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'URCorner') {
+    for (let a = 0; a < urCheck.length; a++) {
+      bannedNumberList.push(index + urCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'LEdge') {
+    for (let a = 0; a < lCheck.length; a++) {
+      bannedNumberList.push(index + lCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'Middle') {
+    for (let a = 0; a < mCheck.length; a++) {
+      bannedNumberList.push(index + mCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'REdge') {
+    for (let a = 0; a < rCheck.length; a++) {
+      bannedNumberList.push(index + rCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'DLCorner') {
+    for (let a = 0; a < dlCheck.length; a++) {
+      bannedNumberList.push(index + dlCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'DEdge') {
+    for (let a = 0; a < dCheck.length; a++) {
+      bannedNumberList.push(index + dCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'DRCorner') {
+    for (let a = 0; a < drCheck.length; a++) {
+      bannedNumberList.push(index + drCheck[a]);
+    }
+  }
+  while (mineNumber < minecount) {
+    mineNumber++;
+    const random = Math.floor(Math.random() * width * height);
+    if ((mines.includes(random)) || (bannedNumberList.includes(random))) {
+      mineNumber--;
+    } else {
+      mines.push(random);
+      squares[random].setAttribute('id', 'mine');
+      squares[random].setAttribute('class', 'mine');
+    }
+  }
+}
