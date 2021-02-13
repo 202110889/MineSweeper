@@ -8,9 +8,7 @@ const buttonList = Array.from(buttonGrid.getElementsByTagName('button'));
 // get info from index
 let indexSize = window.getComputedStyle(squares[0]).getPropertyValue('width');
 indexSize = Number(indexSize.slice(0, -2)); // delete 'px'
-let paddingSize = window.getComputedStyle(squares[0]).getPropertyValue('padding');
-paddingSize = Number(paddingSize.slice(0, -2)); // delete 'px'
-const cellSize = indexSize + (paddingSize * 2);
+const cellSize = indexSize;
 let width = window.getComputedStyle(grid).getPropertyValue('width');
 width = Number(width.slice(0, -2)); // delete 'px'
 width = width / cellSize;
@@ -70,12 +68,68 @@ function getLocationAttribute(index) {
 let time = Number(document.getElementById('timer').innerHTML);
 let timerId = null;
 let clickCount = 0;
+
+// generate a mine field
+function genField(index) {
+  let mineNumber = 0;
+  bannedNumberList.push(index)
+  if (getLocationAttribute(index) === 'ULCorner') {
+    for (let a = 0; a < ulCheck.length; a++) {
+      bannedNumberList.push(index + ulCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'UEdge') {
+    for (let a = 0; a < uCheck.length; a++) {
+      bannedNumberList.push(index + uCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'URCorner') {
+    for (let a = 0; a < urCheck.length; a++) {
+      bannedNumberList.push(index + urCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'LEdge') {
+    for (let a = 0; a < lCheck.length; a++) {
+      bannedNumberList.push(index + lCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'Middle') {
+    for (let a = 0; a < mCheck.length; a++) {
+      bannedNumberList.push(index + mCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'REdge') {
+    for (let a = 0; a < rCheck.length; a++) {
+      bannedNumberList.push(index + rCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'DLCorner') {
+    for (let a = 0; a < dlCheck.length; a++) {
+      bannedNumberList.push(index + dlCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'DEdge') {
+    for (let a = 0; a < dCheck.length; a++) {
+      bannedNumberList.push(index + dCheck[a]);
+    }
+  } else if (getLocationAttribute(index) === 'DRCorner') {
+    for (let a = 0; a < drCheck.length; a++) {
+      bannedNumberList.push(index + drCheck[a]);
+    }
+  }
+  while (mineNumber < minecount) {
+    mineNumber++;
+    const random = Math.floor(Math.random() * width * height);
+    if ((mines.includes(random)) || (bannedNumberList.includes(random))) {
+      mineNumber--;
+    } else {
+      mines.push(random);
+      squares[random].setAttribute('id', 'mine');
+      squares[random].setAttribute('class', 'mine');
+    }
+  }
+}
+
+//insert Numbers
 function insertNumbers() {
   for (let index = 0; index < squares.length; index++) {
     let mineQuantity = 0;
     if (!(squares[index].classList.contains('mine'))) {
 
-      // choose a number for each type of indexes
+      // insert a number in each type of indexes
       if (getLocationAttribute(index) === 'ULCorner') { // UL Corner
         for (let a = 0; a < ulCheck.length; a++) {
           if (squares[ulCheck[a] + index].classList.contains('mine')) {
@@ -134,9 +188,25 @@ function insertNumbers() {
 
       // insert number
       if (mineQuantity !== 0) {
-        squares[index].innerHTML = mineQuantity;
-        squares[index].setAttribute('id', 'filled');
-      } else {
+        squares[index].setAttribute('id', mineQuantity);
+        if (mineQuantity === 1) {
+          squares[index].style.backgroundImage = 'url("img1.png")'
+        } else if (mineQuantity === 2) {
+          squares[index].style.backgroundImage = 'url("img2.png")'
+        } else if (mineQuantity === 3) {
+          squares[index].style.backgroundImage = 'url("img3.png")'
+        } else if (mineQuantity === 4) {
+          squares[index].style.backgroundImage = 'url("img4.png")'
+        } else if (mineQuantity === 5) {
+          squares[index].style.backgroundImage = 'url("img5.png")'
+        } else if (mineQuantity === 6) {
+          squares[index].style.backgroundImage = 'url("img6.png")'
+        } else if (mineQuantity === 7) {
+          squares[index].style.backgroundImage = 'url("img7.png")'
+        } else if (mineQuantity === 8) {
+          squares[index].style.backgroundImage = 'url("img8.png")'
+        }
+      } else if (mineQuantity === 0) {
         squares[index].setAttribute('id', 'blank');
       }
     } else { // if mine is in this index, skip to next index
@@ -243,7 +313,6 @@ function removeButtons(i) {
           }
         }
       }
-      gameClear(i);
     }
   }
 }
@@ -322,7 +391,7 @@ function autoClick(index) {
       }
     }
   }
-  if ((Number(squares[index].innerHTML) === flagQuantity) &&
+  if ((Number(squares[index].getAttribute('id')) === flagQuantity) &&
   (squares[index].getAttribute('class')) === 'opened-field') {
     if (getLocationAttribute(index) === 'ULCorner') { // UL Corner
       ulCheck.forEach(element => removeButtons(element + index));
@@ -560,7 +629,6 @@ function buttonControl(event, index) {
 function fieldControl(event, index) {
   if ((event.button === 0) || (event.button === 1)) {
     autoClick(index);
-    clicked = false;
   }
 }
 
@@ -568,7 +636,7 @@ function fieldControl(event, index) {
 function gameStart() {
   gameOver = false;
   mines.forEach(index => {
-    squares[index].style.backgroundColor = 'gray';
+    squares[index].style.backgroundColor = 'darkgray';
   });
   mines = [];
   bannedNumberList = [];
@@ -584,6 +652,7 @@ function gameStart() {
     squares[index].removeAttribute('class');
     squares[index].removeAttribute('id');
     squares[index].innerHTML = null;
+    squares[index].style.backgroundImage = null
     buttons[index].removeAttribute('class');
     buttonList[index].setAttribute('class', 'field-button');
   }
@@ -594,57 +663,3 @@ document.getElementById('start').addEventListener('mousedown', gameStart);
 assignButtonFunction();
 assignFieldFunction();
 gameStart();
-
-// generate a mine field
-function genField(index) {
-  let mineNumber = 0;
-  bannedNumberList.push(index)
-  if (getLocationAttribute(index) === 'ULCorner') {
-    for (let a = 0; a < ulCheck.length; a++) {
-      bannedNumberList.push(index + ulCheck[a]);
-    }
-  } else if (getLocationAttribute(index) === 'UEdge') {
-    for (let a = 0; a < uCheck.length; a++) {
-      bannedNumberList.push(index + uCheck[a]);
-    }
-  } else if (getLocationAttribute(index) === 'URCorner') {
-    for (let a = 0; a < urCheck.length; a++) {
-      bannedNumberList.push(index + urCheck[a]);
-    }
-  } else if (getLocationAttribute(index) === 'LEdge') {
-    for (let a = 0; a < lCheck.length; a++) {
-      bannedNumberList.push(index + lCheck[a]);
-    }
-  } else if (getLocationAttribute(index) === 'Middle') {
-    for (let a = 0; a < mCheck.length; a++) {
-      bannedNumberList.push(index + mCheck[a]);
-    }
-  } else if (getLocationAttribute(index) === 'REdge') {
-    for (let a = 0; a < rCheck.length; a++) {
-      bannedNumberList.push(index + rCheck[a]);
-    }
-  } else if (getLocationAttribute(index) === 'DLCorner') {
-    for (let a = 0; a < dlCheck.length; a++) {
-      bannedNumberList.push(index + dlCheck[a]);
-    }
-  } else if (getLocationAttribute(index) === 'DEdge') {
-    for (let a = 0; a < dCheck.length; a++) {
-      bannedNumberList.push(index + dCheck[a]);
-    }
-  } else if (getLocationAttribute(index) === 'DRCorner') {
-    for (let a = 0; a < drCheck.length; a++) {
-      bannedNumberList.push(index + drCheck[a]);
-    }
-  }
-  while (mineNumber < minecount) {
-    mineNumber++;
-    const random = Math.floor(Math.random() * width * height);
-    if ((mines.includes(random)) || (bannedNumberList.includes(random))) {
-      mineNumber--;
-    } else {
-      mines.push(random);
-      squares[random].setAttribute('id', 'mine');
-      squares[random].setAttribute('class', 'mine');
-    }
-  }
-}
