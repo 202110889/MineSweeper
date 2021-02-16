@@ -15,11 +15,6 @@ width = width / cellSize;
 let height = window.getComputedStyle(grid).getPropertyValue('height');
 height = Number(height.slice(0, -2)); // delete 'px'
 height = height / cellSize;
-const mineCountBackup = Number(document.getElementById('minecount').innerHTML);
-let minecount = Number(document.getElementById('minecount').innerHTML);
-const normalIndexCountBackup = (width * height) - minecount;
-let normalIndexCount = (width * height) - minecount;
-let clicked = false;
 
 // checklists for each type of indexes
 const ulCheck = [1, width, width + 1]; // UL Corner
@@ -33,7 +28,15 @@ const dCheck = [-width - 1, -width, -width + 1, -1, 1]; // D Edge
 const drCheck = [-width - 1, -width, -1]; // DR Corner
 let mines = [];
 let bannedNumberList = [];
+
+// status quo of game
 let gameOver = false;
+let fieldGenerated = false;
+const mineCountBackup = Number(document.getElementById('minecount').innerHTML);
+let minecount = Number(document.getElementById('minecount').innerHTML);
+const normalIndexCountBackup = (width * height) - minecount;
+let normalIndexCount = (width * height) - minecount;
+let clicked = false;
 
 // return a boolean for a location of index
 function getLocationAttribute(index) {
@@ -190,21 +193,21 @@ function insertNumbers() {
       if (mineQuantity !== 0) {
         squares[index].setAttribute('id', mineQuantity);
         if (mineQuantity === 1) {
-          squares[index].style.backgroundImage = 'url("img1.png")'
+          squares[index].style.backgroundImage = 'url("img1.png")';
         } else if (mineQuantity === 2) {
-          squares[index].style.backgroundImage = 'url("img2.png")'
+          squares[index].style.backgroundImage = 'url("img2.png")';
         } else if (mineQuantity === 3) {
-          squares[index].style.backgroundImage = 'url("img3.png")'
+          squares[index].style.backgroundImage = 'url("img3.png")';
         } else if (mineQuantity === 4) {
-          squares[index].style.backgroundImage = 'url("img4.png")'
+          squares[index].style.backgroundImage = 'url("img4.png")';
         } else if (mineQuantity === 5) {
-          squares[index].style.backgroundImage = 'url("img5.png")'
+          squares[index].style.backgroundImage = 'url("img5.png")';
         } else if (mineQuantity === 6) {
-          squares[index].style.backgroundImage = 'url("img6.png")'
+          squares[index].style.backgroundImage = 'url("img6.png")';
         } else if (mineQuantity === 7) {
-          squares[index].style.backgroundImage = 'url("img7.png")'
+          squares[index].style.backgroundImage = 'url("img7.png")';
         } else if (mineQuantity === 8) {
-          squares[index].style.backgroundImage = 'url("img8.png")'
+          squares[index].style.backgroundImage = 'url("img8.png")';
         }
       } else if (mineQuantity === 0) {
         squares[index].setAttribute('id', 'blank');
@@ -416,6 +419,7 @@ function autoClick(index) {
 }
 
 // Add functions on buttons
+
 function assignButtonFunction() {
   for (let index = 0; index < buttons.length; index++) {
     buttonList[index].addEventListener('mousedown', event => {
@@ -424,14 +428,20 @@ function assignButtonFunction() {
         if ((buttonList[index].getAttribute('class') === 'field-button') && (event.button === 0)) {
           buttonList[index].setAttribute('class', 'field-button-pressed');
         }
-        if (normalIndexCount === normalIndexCountBackup) {
-          genField(index);
-          insertNumbers();
+        if ((event.button !== 2) && (normalIndexCount === normalIndexCountBackup)) {
+          fieldGenerated = false;
+        } else if (normalIndexCount !== normalIndexCountBackup) {
+          fieldGenerated = true
         }
       }
     });
     buttonList[index].addEventListener('mouseup', event => {
       if (!gameOver) {
+        if (!fieldGenerated) {
+          genField(index);
+          insertNumbers();
+          fieldGenerated = true;
+        }
         clicked = false;
         clickCount++;
         buttonControl(event, index);
