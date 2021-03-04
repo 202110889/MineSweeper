@@ -1,24 +1,12 @@
 /*jshint maxerr: 5000 */
-// checklists for each type of indexes
-let ulCheck = [1, width, width + 1]; // UL Corner
-let uCheck = [-1, 1, width - 1, width, width + 1]; // U Edge
-let urCheck = [-1, width - 1, width]; // UR Corner
-let lCheck = [-width, -width + 1, 1, width, width + 1]; // L Edge
-let mCheck = [-width - 1, -width, -width + 1, -1, 1, width - 1, width, width + 1]; // Middle
-let rCheck = [-width - 1, -width, -1, width - 1, width]; // Right Edge
-let dlCheck = [-width, -width + 1, 1]; // DL Corner
-let dCheck = [-width - 1, -width, -width + 1, -1, 1]; // D Edge
-let drCheck = [-width - 1, -width, -1]; // DR Corner
-let mines = [];
-let bannedNumberList = [];
 
 // status quo of game
 let gameOver = false;
 let fieldGenerated = false;
 mineCountBackup = Number(document.getElementById('minecount').innerHTML);
 minecount = Number(document.getElementById('minecount').innerHTML);
-const normalIndexCountBackup = (width * height) - minecount;
-let normalIndexCount = (width * height) - minecount;
+normalIndexCountBackup = (width * height) - minecount;
+normalIndexCount = (width * height) - minecount;
 let clicked = false;
 
 // return a boolean for a location of index
@@ -637,6 +625,8 @@ function gameStart() {
   time = 0;
   document.getElementById('timer').innerHTML = time;
   timerId = null;
+  normalIndexCountBackup = (width * height) - minecount;
+  normalIndexCount = (width * height) - minecount;
   clickCount = 0;
   ulCheck = [1, width, width + 1]; // UL Corner
   uCheck = [-1, 1, width - 1, width, width + 1]; // U Edge

@@ -11,6 +11,20 @@ let buttons;
 let buttonList;
 let minecount;
 let mineCountBackup;
+let normalIndexCount;
+let normalIndexCountBackup;
+// checklists for each type of indexes
+let ulCheck = [1, width, width + 1]; // UL Corner
+let uCheck = [-1, 1, width - 1, width, width + 1]; // U Edge
+let urCheck = [-1, width - 1, width]; // UR Corner
+let lCheck = [-width, -width + 1, 1, width, width + 1]; // L Edge
+let mCheck = [-width - 1, -width, -width + 1, -1, 1, width - 1, width, width + 1]; // Middle
+let rCheck = [-width - 1, -width, -1, width - 1, width]; // Right Edge
+let dlCheck = [-width, -width + 1, 1]; // DL Corner
+let dCheck = [-width - 1, -width, -width + 1, -1, 1]; // D Edge
+let drCheck = [-width - 1, -width, -1]; // DR Corner
+let mines = [];
+let bannedNumberList = [];
 function addElement() {
   width = Number(widthInput.value);
   height = Number(heightInput.value);
@@ -58,5 +72,6 @@ function addElement() {
   squares = Array.from(fieldGrid.getElementsByTagName('div'));
   buttons = Array.from(buttonGrid.getElementsByTagName('div'));
   buttonList = Array.from(buttonGrid.getElementsByTagName('button'));
+
 }
 addElement();
