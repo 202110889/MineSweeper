@@ -1,39 +1,22 @@
 /*jshint maxerr: 5000 */
-const grid = document.getElementById('field');
-const squares = Array.from(grid.getElementsByTagName('div'));
-const buttonGrid = document.getElementById('buttons');
-const buttons = Array.from(buttonGrid.getElementsByTagName('div'));
-const buttonList = Array.from(buttonGrid.getElementsByTagName('button'));
-
-// get info from index
-let indexSize = window.getComputedStyle(squares[0]).getPropertyValue('width');
-indexSize = Number(indexSize.slice(0, -2)); // delete 'px'
-const cellSize = indexSize;
-let width = window.getComputedStyle(grid).getPropertyValue('width');
-width = Number(width.slice(0, -2)); // delete 'px'
-width = width / cellSize;
-let height = window.getComputedStyle(grid).getPropertyValue('height');
-height = Number(height.slice(0, -2)); // delete 'px'
-height = height / cellSize;
-
 // checklists for each type of indexes
-const ulCheck = [1, width, width + 1]; // UL Corner
-const uCheck = [-1, 1, width - 1, width, width + 1]; // U Edge
-const urCheck = [-1, width - 1, width]; // UR Corner
-const lCheck = [-width, -width + 1, 1, width, width + 1]; // L Edge
-const mCheck = [-width - 1, -width, -width + 1, -1, 1, width - 1, width, width + 1]; // Middle
-const rCheck = [-width - 1, -width, -1, width - 1, width]; // Right Edge
-const dlCheck = [-width, -width + 1, 1]; // DL Corner
-const dCheck = [-width - 1, -width, -width + 1, -1, 1]; // D Edge
-const drCheck = [-width - 1, -width, -1]; // DR Corner
+let ulCheck = [1, width, width + 1]; // UL Corner
+let uCheck = [-1, 1, width - 1, width, width + 1]; // U Edge
+let urCheck = [-1, width - 1, width]; // UR Corner
+let lCheck = [-width, -width + 1, 1, width, width + 1]; // L Edge
+let mCheck = [-width - 1, -width, -width + 1, -1, 1, width - 1, width, width + 1]; // Middle
+let rCheck = [-width - 1, -width, -1, width - 1, width]; // Right Edge
+let dlCheck = [-width, -width + 1, 1]; // DL Corner
+let dCheck = [-width - 1, -width, -width + 1, -1, 1]; // D Edge
+let drCheck = [-width - 1, -width, -1]; // DR Corner
 let mines = [];
 let bannedNumberList = [];
 
 // status quo of game
 let gameOver = false;
 let fieldGenerated = false;
-const mineCountBackup = Number(document.getElementById('minecount').innerHTML);
-let minecount = Number(document.getElementById('minecount').innerHTML);
+mineCountBackup = Number(document.getElementById('minecount').innerHTML);
+minecount = Number(document.getElementById('minecount').innerHTML);
 const normalIndexCountBackup = (width * height) - minecount;
 let normalIndexCount = (width * height) - minecount;
 let clicked = false;
@@ -130,7 +113,7 @@ function genField(index) {
 function insertNumbers() {
   for (let index = 0; index < squares.length; index++) {
     let mineQuantity = 0;
-    if (!(squares[index].classList.contains('mine'))) {
+    if (squares[index].getAttribute('class') !== 'mine') {
 
       // insert a number in each type of indexes
       if (getLocationAttribute(index) === 'ULCorner') { // UL Corner
@@ -141,13 +124,13 @@ function insertNumbers() {
         }
       } else if (getLocationAttribute(index) === 'UEdge') { // U Edge
         for (let a = 0; a < uCheck.length; a++) {
-          if (squares[uCheck[a] + index].classList.contains('mine')) {
+          if (squares[uCheck[a] + index].getAttribute('class') === 'mine') {
             mineQuantity++;
           }
         }
       } else if (getLocationAttribute(index) === 'URCorner') { // UR Corner
         for (let a = 0; a < urCheck.length; a++) {
-          if (squares[urCheck[a] + index].classList.contains('mine')) {
+          if (squares[urCheck[a] + index].getAttribute('class') === 'mine') {
             mineQuantity++;
           }
         }
@@ -431,7 +414,7 @@ function assignButtonFunction() {
         if ((event.button !== 2) && (normalIndexCount === normalIndexCountBackup)) {
           fieldGenerated = false;
         } else if (normalIndexCount !== normalIndexCountBackup) {
-          fieldGenerated = true
+          fieldGenerated = true;
         }
       }
     });
@@ -645,31 +628,34 @@ function fieldControl(event, index) {
 //start/restart game
 function gameStart() {
   gameOver = false;
-  mines.forEach(index => {
-    squares[index].style.backgroundColor = 'darkgray';
-  });
   mines = [];
   bannedNumberList = [];
   minecount = mineCountBackup;
+  document.getElementById('minecount').innerHTML = minecount
   normalIndexCount = normalIndexCountBackup;
   clearInterval(timerId);
   time = 0;
   document.getElementById('timer').innerHTML = time;
   timerId = null;
   clickCount = 0;
-  for (let index = 0; index < squares.length; index++) {
-    document.getElementById('minecount').innerHTML = minecount;
-    squares[index].removeAttribute('class');
-    squares[index].removeAttribute('id');
-    squares[index].innerHTML = null;
-    squares[index].style.backgroundImage = null
-    buttons[index].removeAttribute('class');
-    buttonList[index].setAttribute('class', 'field-button');
-  }
+  ulCheck = [1, width, width + 1]; // UL Corner
+  uCheck = [-1, 1, width - 1, width, width + 1]; // U Edge
+  urCheck = [-1, width - 1, width]; // UR Corner
+  lCheck = [-width, -width + 1, 1, width, width + 1]; // L Edge
+  mCheck = [-width - 1, -width, -width + 1, -1, 1, width - 1, width, width + 1]; // Middle
+  rCheck = [-width - 1, -width, -1, width - 1, width]; // Right Edge
+  dlCheck = [-width, -width + 1, 1]; // DL Corner
+  dCheck = [-width - 1, -width, -width + 1, -1, 1]; // D Edge
+  drCheck = [-width - 1, -width, -1]; // DR Corner
 }
 
 //assign gamestart function on button
-document.getElementById('start').addEventListener('mousedown', gameStart);
+document.getElementById('start').addEventListener('mousedown', () => {
+  addElement();
+  assignButtonFunction();
+  assignFieldFunction();
+  gameStart();
+});
 assignButtonFunction();
 assignFieldFunction();
 gameStart();
